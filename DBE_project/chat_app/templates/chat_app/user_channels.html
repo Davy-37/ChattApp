@@ -1,0 +1,71 @@
+{% extends 'squelette.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="../../static/css/user_channels.css">
+
+<div class="page-container">
+
+  <div class="sidebar">
+    <h1>Mes Salons</h1>
+    <ul>
+      {% for channel in channels %}
+        <li>
+          <a href="{% url 'chatroom_detail' channel.id %}" class="room-link">
+            {{ channel.name }}
+          </a>
+        </li>
+      {% empty %}
+        <li>Vous n'avez pas de channels.</li>
+      {% endfor %}
+    </ul>
+    <div class="button-row">
+      <a href="{% url 'create_chatroom' %}" class="create-room-link">Créer un salon</a>
+      <a href="{% url 'chatroom_list' %}" class="create-room-link">Voir tous les salons</a>
+    </div>
+  </div>
+
+
+  <div class="rules-area">
+    <h2>Règles du Chat</h2>
+    <p>Merci de prendre connaissance des consignes suivantes pour assurer une bonne ambiance :</p>
+    <ul>
+      <li>
+        <span class="emoji">🤝</span>
+        <strong>Politesse et courtoisie :</strong> veillez à adopter un ton respectueux et chaleureux envers les autres.
+      </li>
+      <li>
+        <span class="emoji">🚫</span>
+        <strong>Aucune insulte ni harcèlement :</strong> tout comportement abusif sera sanctionné.
+      </li>
+      <li>
+        <span class="emoji">🤐</span>
+        <strong>Respect de la confidentialité :</strong> ne partagez pas d'informations personnelles sans consentement.
+      </li>
+      <li>
+        <span class="emoji">🔞</span>
+        <strong>Contenu inapproprié :</strong> propos explicites, haineux ou illégaux sont strictement interdits.
+      </li>
+      <li>
+        <span class="emoji">💬</span>
+        <strong>Échanges constructifs :</strong> argumentez dans la bienveillance, évitez la provocation gratuite.
+      </li>
+      <li>
+        <span class="emoji">📢</span>
+        <strong>Pas de spam :</strong> n'inondez pas le chat de messages répétitifs ou promotionnels.
+      </li>
+      <li>
+        <span class="emoji">⚠️</span>
+        <strong>Signalez les abus :</strong> contactez un modérateur en cas de comportement suspect ou nuisible.
+      </li>
+    </ul>
+    <p>
+      En respectant ces règles, nous pouvons tous profiter d'un espace de discussion convivial et enrichissant !
+    </p>
+
+    <img src="{% static 'images/pngegg2.png' %}" alt="Image des règles" class="rules-image">
+  </div>
+
+</div>
+{% endblock %}

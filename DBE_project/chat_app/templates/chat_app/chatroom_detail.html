@@ -1,0 +1,134 @@
+{% extends 'squelette.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="../../static/css/chatroom_detail.css">
+
+<div class="chat-container">
+  <div class="chat-section">
+    <h2>Salon : {{ room.name }}</h2>
+    <div class="chat-messages">
+      <ul id="message-list">
+        {% for message in messages %}
+          <li>
+            <span class="message-content">
+              <strong>{{ message.user.username }}</strong> : {{ message.content }}
+            </span>
+            <span class="timestamp">{{ message.timestamp|date:"d/m/Y H:i" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <form class="message-form">
+      {% csrf_token %}
+      <textarea id="messageInput" placeholder="Tapez votre message..."></textarea>
+      <button type="submit" class="send-button">Envoyer</button>
+      <button type="button" id="emojiPickerButton" class="emoji-button">😀</button>
+      <div id="emojiGrid" class="emoji-grid"></div>
+    </form>
+  </div>
+  <div class="channel-info">
+    <h2>{{ room.name }}</h2>
+    <p>{{ room.description }}</p>
+    <hr class="separator">
+    <div class="channel-info-buttons">
+      {% if user in room.members.all %}
+        <form action="{% url 'leave_channel' room_id=room.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="leave-button">Quitter le channel</button>
+        </form>
+      {% else %}
+        <form action="{% url 'join_channel' room_id=room.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit">Rejoindre le channel</button>
+        </form>
+      {% endif %}
+      <form action="{% url 'delete_channel' room_id=room.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="delete-button">Supprimer le channel</button>
+      </form>
+    </div>
+    <hr class="separator">
+    <h3>Utilisateurs</h3>
+    <ul class="user-list">
+      {% for user in room.members.all %}
+        <li>{{ user.username }}</li>
+      {% empty %}
+        <li>Aucun utilisateur.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script src="{% static 'js/emojis.js' %}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roomId = "{{ room.id }}";
+  const userName = "{{ request.user.username }}";
+  const messageList = document.getElementById('message-list');
+  const messageInput = document.getElementById('messageInput');
+  const form = document.querySelector('.message-form');
+
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat/' + roomId + '/');
+
+  chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const newLi = document.createElement('li');
+    newLi.innerHTML = `
+      <span class="message-content">
+        <strong>${data.username}</strong> : ${data.message}
+      </span>
+      <span class="timestamp">${(new Date()).toLocaleString()}</span>
+    `;
+    messageList.appendChild(newLi);
+    messageList.scrollTop = messageList.scrollHeight;
+  };
+
+  chatSocket.onclose = function(e) {
+    console.error('WebSocket fermé :', e);
+  };
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const text = messageInput.value.trim();
+    if (text) {
+      chatSocket.send(JSON.stringify({
+        'message': text,
+        'username': userName
+      }));
+      messageInput.value = '';
+      messageInput.focus();
+    }
+  });
+
+  const button = document.getElementById('emojiPickerButton');
+  const emojiGrid = document.getElementById('emojiGrid');
+
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (emojiGrid.style.display === 'none' || !emojiGrid.style.display) {
+      emojiGrid.style.display = 'grid';
+    } else {
+      emojiGrid.style.display = 'none';
+    }
+  });
+
+  emojiGrid.addEventListener('click', (e) => {
+    if (e.target.tagName === 'SPAN') {
+      messageInput.value += e.target.textContent;
+      messageInput.focus();
+      emojiGrid.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!emojiGrid.contains(e.target) && e.target !== button) {
+      emojiGrid.style.display = 'none';
+    }
+  });
+});
+</script>
+{% endblock %}

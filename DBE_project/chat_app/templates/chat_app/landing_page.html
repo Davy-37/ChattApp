@@ -1,0 +1,16 @@
+{% extends 'squelette.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="../../static/css/landing_page.css">
+
+<div class="welcome-container">
+  <h1>Bienvenue sur le Chat</h1>
+  <p>Vous n'êtes pas connecté</p>
+
+  <div class="button-row">
+    <a href="{% url 'login' %}" class="btn">Se connecter</a>
+    <a href="{% url 'register' %}" class="btn">S'inscrire</a>
+  </div>
+</div>
+{% endblock %}

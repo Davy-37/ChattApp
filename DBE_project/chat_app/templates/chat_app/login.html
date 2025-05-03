@@ -1,0 +1,31 @@
+{% extends 'squelette.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="../../static/css/login.css">
+
+<div class="login-container">
+  <h1>Connexion</h1>
+
+  {% if messages %}
+    <div class="errorlist">
+      {% for message in messages %}
+        {% if message.level_tag == "error" %}
+          <p>{{ message }}</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <label for="username">Nom d'utilisateur</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">Mot de passe</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit" class="login-button">Se connecter</button>
+  </form>
+</div>
+{% endblock %}

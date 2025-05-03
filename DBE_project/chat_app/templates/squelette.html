@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dandi Chat</title>
+  {% load static %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../static/css/squelette.css">
+  <link rel="stylesheet" href="../../static/css/squelette.css">
+</head>
+
+<body>
+  <header>
+    <div class="left-section">
+      <button onclick="history.back()" class="back-button" title="Retour">
+        ⬅️ Retour
+      </button>
+    </div>
+
+    <div class="center-section">
+      <a href="{% url 'landing_page' %}">
+        <h1>Dandi Chat</h1>
+      </a>
+    </div>
+
+    <div class="right-section">
+      {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="logout-button">Déconnexion</button>
+        </form>
+      {% endif %}
+      <div class="logo-container">
+        <a href="{% url 'landing_page' %}">
+          <img src="{% static 'images/pngegg.png' %}" alt="Logo Dandi Chat">
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}
+    {% endblock content %}
+  </main>
+
+  <footer>
+    <p>
+      © 2025 Dandi Chat. Tous droits réservés.
+    </p>
+  </footer>
+</body>
+</html>

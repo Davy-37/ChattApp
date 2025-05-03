@@ -1,0 +1,29 @@
+{% extends 'squelette.html' %}
+{% load static %} <!-- Assure-toi que cette ligne est présente si ce n'est pas déjà dans 'squelette.html' -->
+
+{% block content %}
+
+<link rel="stylesheet" href="../../static/css/chatroom_list.css">
+    
+<div class="room-list-container">
+  <h1>Liste des salons</h1>
+
+  <div class="room-list">
+    {% for room in rooms %}
+      <div class="room-card">
+        <a href="{% url 'chatroom_detail' room.id %}" class="room-name">
+          {{ room.name }}
+        </a>
+        <p class="room-description">{{ room.description }}</p>
+      </div>
+    {% empty %}
+      <p>Vous n'avez aucun salon disponible.</p>
+    {% endfor %}
+  </div>
+
+  <div class="button-row">
+    <a href="{% url 'create_chatroom' %}" class="create-room-link">Créer un nouveau salon</a>
+    <a href="{% url 'user_channels' %}" class="my-channels-link">Mes salons</a>
+  </div>
+</div>
+{% endblock %}
